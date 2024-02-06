@@ -11,8 +11,8 @@
 </head>
 <body>
     <div class="input-group mb-3" style="display:flex; border:1px solid #000; border-radius: 5px; background: white;">
-        <input type="text" class="form-control" style="border:none; font-weight: bold;" placeholder="Length" aria-label="Unit value">
-        <select style="border:none; color: #AE1A1E; font-weight: bold;" class="form-control" id="inputGroupSelect04" aria-label="Unit selection">
+        <input oninput="validateNumberInput(this);" id="txtlength" type="text" class="form-control" style="border:none; font-weight: bold;" placeholder="Length" aria-label="Unit value">
+        <select onchange="syncSelectBoxes(this.id)" style="border:none; color: #AE1A1E; font-weight: bold;" class="form-control unit-select" id="inputGroupSelectL" aria-label="Unit selection">
           <option value="meter">Meter</option>
           <option value="cm">CM</option>
           <option value="feet">Feet</option>
@@ -20,8 +20,8 @@
       </div>
       
       <div class="input-group mb-3" style="margin-top: 10px; display:flex; border:1px solid #000; border-radius: 5px; background: white;">
-        <input type="text" class="form-control" style="border:none; font-weight: bold;" placeholder="width" aria-label="Unit value">
-        <select style="border:none; color: #AE1A1E; font-weight: bold;" class="form-control" id="inputGroupSelect04" aria-label="Unit selection">
+        <input oninput="validateNumberInput(this);" id="txtwidth" type="text" class="form-control" style="border:none; font-weight: bold;" placeholder="width" aria-label="Unit value">
+        <select onchange="syncSelectBoxes(this.id)" style="border:none; color: #AE1A1E; font-weight: bold;" class="form-control unit-select" id="inputGroupSelectW" aria-label="Unit selection">
           <option value="meter">Meter</option>
           <option value="cm">CM</option>
           <option value="feet">Feet</option>
@@ -29,8 +29,8 @@
       </div>
       
       <div class="input-group mb-3" style="margin-top: 10px; display:flex; border:1px solid #000; border-radius: 5px; background: white;">
-        <input type="text" class="form-control" style="border:none; font-weight: bold;" placeholder="Depth" aria-label="Unit value">
-        <select style="border:none; color: #AE1A1E; font-weight: bold;" class="form-control" id="inputGroupSelect04" aria-label="Unit selection">
+        <input oninput="validateNumberInput(this);" id="txtdepth" type="text" class="form-control" style="border:none; font-weight: bold;" placeholder="Depth" aria-label="Unit value">
+        <select onchange="syncSelectBoxes(this.id)" style="border:none; color: #AE1A1E; font-weight: bold;" class="form-control unit-select" id="inputGroupSelectD" aria-label="Unit selection">
           <option value="meter">Meter</option>
           <option value="cm">CM</option>
           <option value="feet">Feet</option>
@@ -38,7 +38,69 @@
       </div>
       
       <div class="form-control">
-        <button type="button" style="margin: 10px auto; width: 200px; background: #AE1A1E; color: white; font-weight: bold; display: flex;">Calculate</button>
+        <button onclick="calculates();" type="button" style="margin: 10px auto; width: 200px; background: #AE1A1E; color: white; font-weight: bold; display: flex;">Calculate</button>
       </div>
+
+      <script>
+
+    function validateNumberInput(input) {
+        input.value = input.value.replace(/[^0-9.]/g, ''); // Allow only numbers and decimal point
+      }
+
+    function syncSelectBoxes(selectId) {
+        var value = document.getElementById(selectId).value;
+        var selectBoxes = document.getElementsByClassName('unit-select');
+        for (var i = 0; i < selectBoxes.length; i++) {
+          selectBoxes[i].value = value;
+        }
+      }
+
+
+            function calculates() {
+        // Get the values of length, width, and depth inputs
+        var length = parseFloat(document.getElementById('txtlength').value);
+        var width = parseFloat(document.getElementById('txtwidth').value);
+        var depth = parseFloat(document.getElementById('txtdepth').value);
+
+
+        // Check if any of the fields are empty
+        if (isNaN(length) || isNaN(width) || isNaN(depth)) {
+          return; // Stop calculation if any field is empty
+        }
+
+
+
+        // Get the selected unit for length, width, and depth
+        var lengthUnit = document.getElementById('inputGroupSelectL').value;
+        var widthUnit = document.getElementById('inputGroupSelectW').value;
+        var depthUnit = document.getElementById('inputGroupSelectD').value;
+
+        // Convert units to meters if necessary
+        if (lengthUnit === 'cm') {
+          length /= 100; // Convert from cm to meter
+        } else if (lengthUnit === 'feet') {
+          length *= 0.3048; // Convert from feet to meter
+        }
+
+        if (widthUnit === 'cm') {
+          width /= 100; // Convert from cm to meter
+        } else if (widthUnit === 'feet') {
+          width *= 0.3048; // Convert from feet to meter
+        }
+
+        if (depthUnit === 'cm') {
+          depth /= 100; // Convert from cm to meter
+        } else if (depthUnit === 'feet') {
+          depth *= 0.3048; // Convert from feet to meter
+        }
+
+        // Calculate the volume (length * width * depth)
+        var volume = length * width * depth;
+        volume = volume.toFixed(2);
+        // Display the volume
+        //alert("Volume of concrete needed: " + volume + " cubic meters");
+        window.location.assign('result.html?requiredm3='+volume);
+      }
+      </script>
 </body>
 </html>
